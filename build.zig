@@ -2,6 +2,8 @@ const std = @import("std");
 const Build = std.Build;
 const Step = Build.Step;
 const Module = Build.Module;
+const Dependency = Build.Dependency;
+const LazyPath = Build.LazyPath;
 
 const BuildOptions = struct {
     opt: std.builtin.OptimizeMode,
@@ -15,14 +17,19 @@ const BuildOptions = struct {
     }
 };
 
-fn runCargo(b: *Build, options: BuildOptions, crate_root: []const u8, output_file: []const u8, target: ?[]const u8, extra_args: []const []const u8) Build.LazyPath {
+fn runCargo(b: *Build, options: BuildOptions, crate_root: LazyPath, output_file: []const u8, target: ?[]const u8, extra_args: []const []const u8) Build.LazyPath {
     const tool_run = b.addSystemCommand(&.{"cargo"});
-    const crate_root_lazy = b.path(crate_root);
-    tool_run.setCwd(crate_root_lazy);
+
+    const y = b.build_root.join(b.allocator, &.{"build-result"}) catch unreachable;
+
+    std.debug.print(">>>>>>>>>> GGGGGG {s}", .{y});
+
+    tool_run.setCwd(crate_root);
     tool_run.addArg("build");
     if (target) |t| {
         tool_run.addArgs(&.{ "--target", t });
     }
+    tool_run.addArgs(&.{ "--target-dir", y });
     tool_run.addArgs(extra_args);
 
     var opt_path: []const u8 = undefined;
@@ -39,11 +46,14 @@ fn runCargo(b: *Build, options: BuildOptions, crate_root: []const u8, output_fil
         },
     }
 
+    // /minijinja_dep.path("").getPath(b)
+    //
     const generated = b.allocator.create(std.Build.GeneratedFile) catch unreachable;
-    var path = b.build_root.join(b.allocator, &.{ crate_root, "target", opt_path, output_file }) catch unreachable;
-    if (target) |t| {
-        path = b.build_root.join(b.allocator, &.{ crate_root, "target", t, opt_path, output_file }) catch unreachable;
-    }
+    //var path = b.build_root.join(b.allocator, &.{ crate_root, "target", opt_path, output_file }) catch unreachable;
+    //if (target) |t| {
+    //    path = b.build_root.join(b.allocator, &.{ crate_root, "target", t, opt_path, output_file }) catch unreachable;
+    //}
+    const path = b.build_root.join(b.allocator, &.{ "boo", output_file }) catch unreachable;
 
     generated.* = .{
         .step = &tool_run.step,
@@ -62,22 +72,25 @@ const Libs = struct {
     minijinja_include: Build.LazyPath,
     link_mode: std.builtin.LinkMode,
 
-    fn init(b: *Build, options: BuildOptions) Libs {
+    fn init(b: *Build, options: BuildOptions, minijinja_dep: *Dependency) Libs {
         const link_mode: std.builtin.LinkMode = switch (options.opt) {
             // dynamic is faster, but harder to ship
             .Debug => .dynamic,
             else => .static,
         };
+
+        std.debug.print("PATH: {s}\n", .{minijinja_dep.path("").getPath(b)});
+
         return .{
             .minijinja = runCargo(
                 b,
                 options,
-                "lib/minijinja/",
+                minijinja_dep.path(""),
                 "libminijinja_cabi.dylib",
                 null,
                 &.{ "-p", "minijinja-cabi" },
             ),
-            .minijinja_include = b.path("lib/minijinja/minijinja-cabi/include/"),
+            .minijinja_include = minijinja_dep.path("minijinja-cabi/include/"),
             .link_mode = link_mode,
         };
     }
@@ -112,11 +125,10 @@ const Builder = struct {
     libs: Libs,
     options: BuildOptions,
 
-    fn init(b: *Build) Builder {
-        const options = BuildOptions.init(b);
+    fn init(b: *Build, options: BuildOptions, minijinja_dep: *Dependency) Builder {
         return .{
             .b = b,
-            .libs = Libs.init(b, options),
+            .libs = Libs.init(b, options, minijinja_dep),
             .options = options,
         };
     }
@@ -155,7 +167,13 @@ const MinjinjaBuilder = struct {
 };
 
 pub fn build(b: *std.Build) void {
-    var builder = Builder.init(b);
+    const options = BuildOptions.init(b);
+
+    const minijinja_dep = b.dependency("minijinja", .{
+        .target = options.target,
+        .optimize = options.opt,
+    });
+    var builder = Builder.init(b, options, minijinja_dep);
 
     const mb = MinjinjaBuilder.init(b, &builder);
     //const minijinja = mb.minijinja;

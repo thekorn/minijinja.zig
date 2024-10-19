@@ -1,3 +1,0 @@
-[submodule "lib/minijinja"]
-	path = lib/minijinja
-	url = https://github.com/mitsuhiko/minijinja.git
