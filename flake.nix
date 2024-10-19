@@ -31,6 +31,7 @@
             # compiler.
             # Issue: https://github.com/ziglang/zig/issues/18998
             unset NIX_CFLAGS_COMPILE
+            unset LD_LIBRARY_PATH
             #unset NIX_LDFLAGS
           '';
         };
