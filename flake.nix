@@ -24,7 +24,7 @@
             rustup
             zig-overlay.packages.${system}."master-2024-10-14"
             zls-master.packages.${system}.default
-          ];
+          ] ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [ glibc ]) ;
 
           shellHook = ''
             # We unset some NIX environment variables that might interfere with the zig
