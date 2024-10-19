@@ -2,12 +2,16 @@
     .name = "minijinja",
     .version = "0.0.1",
     .minimum_zig_version = "0.14.0",
-    .dependencies = .{},
+    .dependencies = .{
+        .minijinja = .{
+            .url = "git+https://github.com/mitsuhiko/minijinja.git?ref=main#cd2063c270122970f827bf2555da18697cddd272",
+            .hash = "1220c4c7cd66e0f9cdaf8ba48791ee491dd9b592e5939440d612df7e678805c61e16",
+        },
+    },
     .paths = .{
         "build.zig",
         "build.zig.zon",
         "src",
-        "lib/minijinja",
         "LICENSE",
         "README.md",
     },
