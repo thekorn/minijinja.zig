@@ -30,8 +30,8 @@ jobs:
       # Run our checks to catch quick issues
       - run: nix flake check
 
-      - name: build
-        run: nix develop -c zig build --summary all
+      - name: build & test
+        run: nix develop -c zig build test --summary all
         #run: nix develop -c zig build --summary all -Dtarget=${{ matrix.target }}
 
   #test-x86_64-linux:
