@@ -84,3 +84,11 @@ Which results in
   <li>Wurst</li>
 </ul>
 ```
+
+## Tests
+
+Using `nix` tests can be run like
+
+```bash
+$ nix develop -c zig build test --summary all
+```
