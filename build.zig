@@ -19,17 +19,11 @@ const BuildOptions = struct {
 
 fn runCargo(b: *Build, options: BuildOptions, crate_root: LazyPath, output_file: []const u8, target: ?[]const u8, extra_args: []const []const u8) Build.LazyPath {
     const tool_run = b.addSystemCommand(&.{"cargo"});
-
-    const y = b.build_root.join(b.allocator, &.{"build-result"}) catch unreachable;
-
-    std.debug.print(">>>>>>>>>> GGGGGG {s}", .{y});
-
     tool_run.setCwd(crate_root);
     tool_run.addArg("build");
     if (target) |t| {
         tool_run.addArgs(&.{ "--target", t });
     }
-    tool_run.addArgs(&.{ "--target-dir", y });
     tool_run.addArgs(extra_args);
 
     var opt_path: []const u8 = undefined;
@@ -46,14 +40,14 @@ fn runCargo(b: *Build, options: BuildOptions, crate_root: LazyPath, output_file:
         },
     }
 
-    // /minijinja_dep.path("").getPath(b)
-    //
+    const target_dir = b.build_root.join(b.allocator, &.{"build-result"}) catch unreachable;
+    tool_run.addArgs(&.{ "--target-dir", target_dir });
+
     const generated = b.allocator.create(std.Build.GeneratedFile) catch unreachable;
-    //var path = b.build_root.join(b.allocator, &.{ crate_root, "target", opt_path, output_file }) catch unreachable;
-    //if (target) |t| {
-    //    path = b.build_root.join(b.allocator, &.{ crate_root, "target", t, opt_path, output_file }) catch unreachable;
-    //}
-    const path = b.build_root.join(b.allocator, &.{ "boo", output_file }) catch unreachable;
+    var path = b.build_root.join(b.allocator, &.{ "build-result", opt_path, output_file }) catch unreachable;
+    if (target) |t| {
+        path = b.build_root.join(b.allocator, &.{ "build-result", t, opt_path, output_file }) catch unreachable;
+    }
 
     generated.* = .{
         .step = &tool_run.step,
@@ -78,9 +72,6 @@ const Libs = struct {
             .Debug => .dynamic,
             else => .static,
         };
-
-        std.debug.print("PATH: {s}\n", .{minijinja_dep.path("").getPath(b)});
-
         return .{
             .minijinja = runCargo(
                 b,
@@ -176,7 +167,6 @@ pub fn build(b: *std.Build) void {
     var builder = Builder.init(b, options, minijinja_dep);
 
     const mb = MinjinjaBuilder.init(b, &builder);
-    //const minijinja = mb.minijinja;
     const minijinja_unit_tests = mb.minijinja_unit_tests;
 
     const run_minijinja_unit_tests = b.addRunArtifact(minijinja_unit_tests);
