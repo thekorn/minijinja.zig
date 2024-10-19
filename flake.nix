@@ -34,6 +34,11 @@
             unset LD_LIBRARY_PATH
             #unset NIX_LDFLAGS
           '';
+
+          PKG_CONFIG_PATH = if pkgs.stdenv.isLinux then
+                "${pkgs.glibc}/lib/pkgconfig"
+            else
+                "";
         };
       }
     );
