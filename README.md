@@ -1,5 +1,7 @@
 # minijinja.zig
 
+![ci workflow](https://github.com/thekorn/minijinja.zig/actions/workflows/ci.yaml/badge.svg)
+
 zig bindings for the amazing [minijinja](https://github.com/mitsuhiko/minijinja) templating engine.
 It's a thin wrapper around the C ABI of minijinja.
 
