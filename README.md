@@ -3,6 +3,8 @@
 zig bindings for the amazing [minijinja](https://github.com/mitsuhiko/minijinja) templating engine.
 It's a thin wrapper around the C ABI of minijinja.
 
+**NOTE**: this is a work in progress and mac only at the moment.
+
 ## Requirements
 
 - zig >= 0.14
