@@ -1,46 +1,29 @@
 {
-  description = "dev shell for zig-renderer";
-
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    zig.url = "github:mitchellh/zig-overlay";
-    zls.url = "github:zigtools/zls";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    # Used for shell.nix
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
+    zig-overlay.url = "github:mitchellh/zig-overlay";
+    zls-master = {
+      url = "github:zigtools/zls";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.zig-overlay.follows = "zig-overlay";
     };
+
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-    ...
-  } @ inputs: let
-    overlays = [
-      # Other overlays
-      (final: prev: rec {
-        zigpkgs = inputs.zig.packages.${prev.system};
-        zig = inputs.zig.packages.${prev.system}."master-2024-10-14";
-        zls = inputs.zls.packages.${prev.system}.default;
-      })
-    ];
-
-    # Our supported systems are the same supported systems as the Zig binaries
-    systems = builtins.attrNames inputs.zig.packages;
-  in
-    flake-utils.lib.eachSystem systems (
-      system: let
-        pkgs = import nixpkgs {inherit overlays system;};
-      in rec {
-        devShells.default = pkgs.mkShell {
+  outputs = { self, flake-utils, nixpkgs, zig-overlay, zls-master }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = (import nixpkgs) {
+          inherit system;
+        };
+      in {
+        devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
-            zig
-            zls
             rustup
+            zig-overlay.packages.${system}."master-2024-10-14"
+            zls-master.packages.${system}.default
           ];
 
           shellHook = ''
@@ -51,9 +34,6 @@
             unset NIX_LDFLAGS
           '';
         };
-
-        # For compatibility with older versions of the `nix` binary
-        devShell = self.devShells.${system}.default;
       }
     );
 }
