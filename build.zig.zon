@@ -4,8 +4,8 @@
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .minijinja = .{
-            .url = "git+https://github.com/mitsuhiko/minijinja.git?ref=main#cd2063c270122970f827bf2555da18697cddd272",
-            .hash = "1220c4c7cd66e0f9cdaf8ba48791ee491dd9b592e5939440d612df7e678805c61e16",
+            .url = "git+https://github.com/mitsuhiko/minijinja.git#8ebfb1f15bc46028efb45ce5d87a60e9067e2e5f",
+            .hash = "1220112e9d2491322ae48667d2d9caf10a50aca8d58be0f3de939f2171d81d9dc6d6",
         },
     },
     .paths = .{
