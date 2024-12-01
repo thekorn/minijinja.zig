@@ -27,6 +27,7 @@ jobs:
       - uses: cachix/install-nix-action@v30
         with:
           nix_path: nixpkgs=channel:nixos-unstable
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
       # Run our checks to catch quick issues
       - run: nix flake check
 
