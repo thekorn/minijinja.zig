@@ -22,7 +22,7 @@
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
             rustup
-            zig-overlay.packages.${system}."master-2024-10-14"
+            zig-overlay.packages.${system}."master-2024-12-01"
             zls-master.packages.${system}.default
           ] ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [ glibc ]) ;
 
