@@ -57,17 +57,17 @@ pub fn convertType(
             return obj;
         },
         .pointer => |ptr_info| switch (ptr_info.size) {
-            .One => switch (@typeInfo(ptr_info.child)) {
+            .one => switch (@typeInfo(ptr_info.child)) {
                 .array, .@"enum", .@"union", .@"struct" => {
                     std.log.debug("Value is a '.Pointer.One.Nested'", .{});
                     return convertType(value.*);
                 },
                 else => error.NotImplemented,
             },
-            .Many, .C => {
+            .many, .c => {
                 return error.NotImplemented;
             },
-            .Slice => {
+            .slice => {
                 if (ptr_info.child == u8) {
                     std.log.debug("Value is a 'string slice'", .{});
                     return c.mj_value_new_string(value.ptr);

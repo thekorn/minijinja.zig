@@ -140,7 +140,10 @@ const MinjinjaBuilder = struct {
         const minijinja_unit_tests = b.addTest(.{
             .root_source_file = minijinja.root_source_file orelse unreachable,
             .target = builder.options.target,
-            .test_runner = b.path("test_runner.zig"),
+            .test_runner = .{
+                .path = b.path("test_runner.zig"),
+                .mode = .simple,
+            },
             .optimize = builder.options.opt,
             .link_libc = true,
         });
