@@ -4,8 +4,8 @@
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .minijinja = .{
-            .url = "git+https://github.com/mitsuhiko/minijinja.git?ref=main#915bfb9956115d0e2498240646e08adf82814675",
-            .hash = "122047d6e13c131883baf842cace27fd1b72bfd182530f17c20b750bcf58af53845f",
+            .url = "git+https://github.com/mitsuhiko/minijinja.git?ref=main#a2584052e5d1b65a6ab96eff6f656bb9788cc55f",
+            .hash = "N-V-__8AAL6CIgCziiCi4_t_DbOkxkVFYaP0m7DYbjWEhzYV",
         },
     },
     .paths = .{
@@ -15,5 +15,5 @@
         "LICENSE",
         "README.md",
     },
-    .fingerprint = 0x2b1434bded9ecca
+    .fingerprint = 0x2b1434bded9ecca,
 }
