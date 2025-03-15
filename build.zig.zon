@@ -1,5 +1,5 @@
 .{
-    .name = "minijinja",
+    .name = .minijinja,
     .version = "0.0.1",
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
@@ -15,4 +15,5 @@
         "LICENSE",
         "README.md",
     },
+    .fingerprint = 0x2b1434bded9ecca
 }

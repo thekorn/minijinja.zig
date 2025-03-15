@@ -1,14 +1,14 @@
 {
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    zig-overlay.url = "github:mitchellh/zig-overlay";
-    zls-master = {
-      url = "github:zigtools/zls";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.zig-overlay.follows = "zig-overlay";
-    };
+  zig-overlay.url = "github:mitchellh/zig-overlay";
+  zls-master = {
+    url = "github:zigtools/zls";
+    inputs.nixpkgs.follows = "nixpkgs";
+    inputs.zig-overlay.follows = "zig-overlay";
+  };
 
   };
 
@@ -22,8 +22,10 @@
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
             rustup
-            zig-overlay.packages.${system}."master-2025-02-01"
-            zls-master.packages.${system}.default
+            #zig-overlay.packages.${system}."master-2025-02-01"
+            #zls-master.packages.${system}.default
+            zig
+            zls
           ] ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [ glibc ]) ;
 
           shellHook = ''
